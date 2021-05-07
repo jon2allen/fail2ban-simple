@@ -5,6 +5,7 @@
 #    Ex. "PAM 2 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=43.229.53.60  user=root"
 # 2. Check duplication by 'iptables -L' command
 # -------------------------------------------------------------------------------------------------------
+use Cwd;
 
 my @iptables = `/sbin/iptables -L -n`;
 my $prot_ip = `cat .nobanip`;
@@ -42,6 +43,9 @@ MAIN: {
     my $intrusion2 = {};
     my $lent = length($prot_ip);
     print("Protected IP: $prot_ip  Len: $lent \n");
+    # print($ENV{'PWD'});
+    my $cwd = cwd();
+    print "Current working directory: $cwd \n";
     foreach my $line (@lines) {
         # PAM 2 more authentication failures; logname= uid=0 euid=0 tty=ssh ruser= rhost=43.229.53.60  user=root
         if ($line =~ /PAM\s+\d+\s+more authentication failures.+rhost=([\d\.]+).+user=(\S+)/) {

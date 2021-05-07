@@ -33,6 +33,9 @@ sub ban_ip($)
     my $cmd = "/sbin/iptables -A INPUT -s $ip -p tcp --destination-port 25 -j REJECT";
     `$cmd`;
     print "+OK FAIL2BAN $ip\n";
+    my $cmd = "/sbin/iptables -A INPUT -s $ip -p tcp --destination-port 465 -j REJECT";
+    `$cmd`;
+    print "+OK fail2ban port 465 \n";
 }
 
 MAIN: {
