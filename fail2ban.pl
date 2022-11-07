@@ -8,17 +8,21 @@
 use Cwd;
 
 my @iptables = `/sbin/iptables -L -n`;
-my $prot_ip = `cat .nobanip`;
+my @prot_ip = `cat .nobanip`;
 
 sub ban_ip($)
 {
     my ($ip) = @_;
 
     my $found = 0;
-    print "Protected IP: $prot_ip \n";
-    if ($ip =~ /$prot_ip/ && (length($prot_ip) > 0)) {
-            print "$ip is prjected \n";
+    print "Protected IP: @prot_ip \n";
+    foreach my $p_ip (@prot_ip){
+        print "IP:  $ip \n";
+        print "p_ip: $p_ip \n";	
+        if ($p_ip =~ /$ip/ && (length($p_ip) > 0)) {
+            print "$p_ip is protected \n";
             return;
+	}
     }
     foreach my $line (@iptables) {
         if ($line =~ /$ip/ && $line =~ /REJECT/ && $line =~ /dpt:22/) {
@@ -33,7 +37,7 @@ sub ban_ip($)
    
     my $cmd = "/sbin/iptables -A INPUT -s $ip -p tcp --destination-port 22 -j REJECT";
     `$cmd`;
-    print "+OK FAIL2BAN $ip\n";
+    print "+OK FAIL2BAN $ip for port 22 \n";
 }
 
 MAIN: {
@@ -81,6 +85,9 @@ MAIN: {
             print "$ip: @{$intrusion2->{$ip}}\n";
             print "$ip is suspecious\n";
             ban_ip($ip);
+        }
+        else {
+            print "$ip is below threshold\n";
         }
     }
 

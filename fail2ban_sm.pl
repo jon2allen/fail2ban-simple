@@ -24,6 +24,12 @@ sub ban_ip($)
         }
     }
 
+    foreach my $line (@iptables) {
+        if ($line =~ /$ip/ && $line =~ /REJECT/ && $line =~ /dpt:465/) {
+            $found = 1; last;
+        }
+    }
+
     if ($found) { # Don't register duplicated ip block
         print "$ip is already in DROP list\n";
         return;
